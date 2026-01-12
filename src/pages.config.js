@@ -4,6 +4,9 @@ import Templates from './pages/Templates';
 import Examples from './pages/Examples';
 import Documentation from './pages/Documentation';
 import Scripts from './pages/Scripts';
+import Pipelines from './pages/Pipelines';
+import Editor from './pages/Editor';
+import Deploy from './pages/Deploy';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +17,9 @@ export const PAGES = {
     "Examples": Examples,
     "Documentation": Documentation,
     "Scripts": Scripts,
+    "Pipelines": Pipelines,
+    "Editor": Editor,
+    "Deploy": Deploy,
 }
 
 export const pagesConfig = {

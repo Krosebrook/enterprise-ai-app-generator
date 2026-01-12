@@ -11,7 +11,10 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Zap
+  Zap,
+  GitBranch,
+  Code,
+  Rocket
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
@@ -22,6 +25,9 @@ const navItems = [
   { name: 'Examples', icon: FileCode, page: 'Examples' },
   { name: 'Docs', icon: BookOpen, page: 'Documentation' },
   { name: 'Scripts', icon: Terminal, page: 'Scripts' },
+  { name: 'CI/CD', icon: GitBranch, page: 'Pipelines' },
+  { name: 'Editor', icon: Code, page: 'Editor' },
+  { name: 'Deploy', icon: Rocket, page: 'Deploy' },
 ];
 
 export default function Layout({ children, currentPageName }) {
