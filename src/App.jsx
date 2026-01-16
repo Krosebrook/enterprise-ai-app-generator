@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -7,10 +8,24 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import PWAInstallBanner from '@/components/PWAInstallBanner';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
+
+/**
+ * Loading fallback component for lazy-loaded routes
+ * @returns {JSX.Element} Loading spinner
+ */
+const PageLoadingFallback = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-slate-950">
+    <div className="text-center">
+      <div className="w-12 h-12 mx-auto mb-4 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
+      <p className="text-slate-400">Loading...</p>
+    </div>
+  </div>
+);
 
 /**
  * Layout wrapper component that conditionally wraps children with Layout component
@@ -51,27 +66,29 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Render the main app
+  // Render the main app with Suspense for lazy-loaded routes
   return (
-    <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Routes>
+        <Route path="/" element={
+          <LayoutWrapper currentPageName={mainPageKey}>
+            <MainPage />
+          </LayoutWrapper>
+        } />
+        {Object.entries(Pages).map(([path, Page]) => (
+          <Route
+            key={path}
+            path={`/${path}`}
+            element={
+              <LayoutWrapper currentPageName={path}>
+                <Page />
+              </LayoutWrapper>
+            }
+          />
+        ))}
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </Suspense>
   );
 };
 
@@ -89,6 +106,7 @@ function App() {
         <Router>
           <NavigationTracker />
           <AuthenticatedApp />
+          <PWAInstallBanner />
         </Router>
         <Toaster />
       </QueryClientProvider>
