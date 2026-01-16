@@ -19,10 +19,11 @@ export async function registerServiceWorker() {
 
     console.log('Service Worker registered successfully:', registration.scope);
 
-    // Check for updates periodically
+    // Check for updates periodically (every 30 minutes)
+    // This interval balances update responsiveness with battery/network efficiency
     setInterval(() => {
       registration.update();
-    }, 60000); // Check every minute
+    }, 30 * 60 * 1000); // 30 minutes
 
     // Handle service worker updates
     registration.addEventListener('updatefound', () => {
@@ -30,11 +31,14 @@ export async function registerServiceWorker() {
       
       newWorker?.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // New service worker available, prompt user to refresh
-          if (confirm('New version available! Reload to update?')) {
-            newWorker.postMessage({ type: 'SKIP_WAITING' });
-            window.location.reload();
-          }
+          // New service worker available
+          // Trigger a custom event that can be handled by the app's notification system
+          window.dispatchEvent(new CustomEvent('sw-update-available', {
+            detail: { registration, newWorker }
+          }));
+          
+          // Fallback to console log if no handler is registered
+          console.log('New service worker available. Refresh to update.');
         }
       });
     });

@@ -19,10 +19,12 @@ const PRECACHE_ASSETS = [
 
 /**
  * API endpoints to cache with network-first strategy
+ * Configure these based on your environment
  */
 const API_ENDPOINTS = [
   '/api/',
-  'base44.app'
+  // Add environment-specific endpoints as needed
+  ...(self.location.hostname.includes('base44.app') ? ['base44.app'] : [])
 ];
 
 /**

@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { X, Download } from 'lucide-react';
 import { setupInstallPrompt, showInstallPrompt, isStandalone } from '@/utils/pwa';
 
+// Configuration constant for dismissal period
+const DISMISSAL_PERIOD_DAYS = 7;
+
 /**
  * PWA Install Banner component
  * Shows a banner prompting users to install the app as a PWA
  * Automatically handles install prompt availability and dismissal
+ * @param {Object} props - Component props
+ * @param {number} [props.dismissalDays=7] - Days before showing banner again after dismissal
  * @returns {JSX.Element|null} Install banner or null if not available
  */
-export default function PWAInstallBanner() {
+export default function PWAInstallBanner({ dismissalDays = DISMISSAL_PERIOD_DAYS }) {
   const [showBanner, setShowBanner] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
 
@@ -24,8 +29,8 @@ export default function PWAInstallBanner() {
       const dismissedTime = parseInt(dismissed, 10);
       const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
       
-      // Show again after 7 days
-      if (daysSinceDismissed < 7) {
+      // Show again after configured dismissal period
+      if (daysSinceDismissed < dismissalDays) {
         return;
       }
     }
