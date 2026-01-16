@@ -9,13 +9,11 @@ import { RefreshCw, X } from 'lucide-react';
  */
 export default function SWUpdateBanner() {
   const [showUpdate, setShowUpdate] = useState(false);
-  const [registration, setRegistration] = useState(null);
   const [newWorker, setNewWorker] = useState(null);
 
   useEffect(() => {
     // Listen for service worker updates
     const handleUpdate = (event) => {
-      setRegistration(event.detail.registration);
       setNewWorker(event.detail.newWorker);
       setShowUpdate(true);
     };

@@ -2,11 +2,16 @@
  * PWA utilities for service worker registration and install prompts
  */
 
+// Configuration constants
+const SW_UPDATE_CHECK_INTERVAL = 30 * 60 * 1000; // 30 minutes (configurable)
+
 /**
  * Register the service worker
+ * @param {Object} options - Registration options
+ * @param {number} [options.updateInterval=1800000] - Update check interval in milliseconds
  * @returns {Promise<ServiceWorkerRegistration|null>} Registration object or null if not supported
  */
-export async function registerServiceWorker() {
+export async function registerServiceWorker({ updateInterval = SW_UPDATE_CHECK_INTERVAL } = {}) {
   if (!('serviceWorker' in navigator)) {
     console.log('Service workers are not supported');
     return null;
@@ -19,11 +24,11 @@ export async function registerServiceWorker() {
 
     console.log('Service Worker registered successfully:', registration.scope);
 
-    // Check for updates periodically (every 30 minutes)
+    // Check for updates periodically
     // This interval balances update responsiveness with battery/network efficiency
     setInterval(() => {
       registration.update();
-    }, 30 * 60 * 1000); // 30 minutes
+    }, updateInterval);
 
     // Handle service worker updates
     registration.addEventListener('updatefound', () => {

@@ -39,7 +39,7 @@ export default function PWAInstallBanner({ dismissalDays = DISMISSAL_PERIOD_DAYS
     setupInstallPrompt((available) => {
       setShowBanner(available);
     });
-  }, []);
+  }, [dismissalDays]); // Re-run if dismissalDays changes
 
   const handleInstall = async () => {
     setIsInstalling(true);

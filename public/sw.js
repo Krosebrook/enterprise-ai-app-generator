@@ -9,21 +9,27 @@ const API_CACHE = 'vibecode-api-v1';
 
 /**
  * Assets to cache immediately on service worker installation
+ * Note: For production, consider using workbox or vite-plugin-pwa
+ * to automatically generate this list from your build output
  */
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/offline.html'
+  // CSS and JS bundles are cached at runtime via fetch event
+  // to avoid hardcoding build-specific hashes
 ];
 
 /**
  * API endpoints to cache with network-first strategy
- * Configure these based on your environment
+ * Note: Configure these based on your environment variables
+ * or use a configuration file for different deployment environments
  */
 const API_ENDPOINTS = [
   '/api/',
-  // Add environment-specific endpoints as needed
+  // Environment-specific endpoints can be configured here
+  // Example: process.env.API_BASE_URL
   ...(self.location.hostname.includes('base44.app') ? ['base44.app'] : [])
 ];
 
