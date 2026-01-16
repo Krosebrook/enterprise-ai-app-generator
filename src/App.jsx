@@ -12,10 +12,22 @@ const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
+/**
+ * Layout wrapper component that conditionally wraps children with Layout component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render
+ * @param {string} props.currentPageName - Name of the current page for navigation tracking
+ * @returns {JSX.Element} Wrapped or unwrapped children based on Layout availability
+ */
 const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
   : <>{children}</>;
 
+/**
+ * Main authenticated application component
+ * Handles authentication states, loading states, and routing
+ * @returns {JSX.Element|null} Application routes or loading/error states
+ */
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -64,6 +76,11 @@ const AuthenticatedApp = () => {
 };
 
 
+/**
+ * Root application component
+ * Provides authentication, routing, and query client context to the application
+ * @returns {JSX.Element} Complete application with all providers
+ */
 function App() {
 
   return (

@@ -24,7 +24,7 @@ export default function ComponentTree({
   onSelect, 
   onAdd,
   onDelete,
-  expanded = true 
+  expanded: _expanded = true 
 }) {
   const [expandedItems, setExpandedItems] = React.useState(new Set(['pages', 'components', 'styles']));
 

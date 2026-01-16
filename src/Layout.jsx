@@ -8,7 +8,6 @@ import {
   FileCode, 
   BookOpen,
   Terminal,
-  Settings,
   ChevronLeft,
   ChevronRight,
   Zap,
@@ -18,6 +17,10 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
+/**
+ * Navigation configuration for the application sidebar
+ * @type {Array<{name: string, icon: React.Component, page: string}>}
+ */
 const navItems = [
   { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
   { name: 'Generate App', icon: Sparkles, page: 'Generator' },
@@ -31,6 +34,13 @@ const navItems = [
   { name: 'AI Code Tools', icon: Sparkles, page: 'CodeAI' },
 ];
 
+/**
+ * Main application layout component with collapsible sidebar navigation
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Content to render in the main area
+ * @param {string} props.currentPageName - Name of the current active page
+ * @returns {JSX.Element} Layout with sidebar and main content area
+ */
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
 

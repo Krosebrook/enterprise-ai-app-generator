@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -54,7 +53,7 @@ export default function Generator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const { data: templates = [] } = useQuery({
+  const { data: _templates = [] } = useQuery({
     queryKey: ['templates'],
     queryFn: () => base44.entities.Template.list(),
   });
