@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Book, 
   Rocket, 
   Shield, 
-  Code, 
   FileText,
-  CheckCircle2,
-  ArrowRight,
-  Zap
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import ReactMarkdown from 'react-markdown';

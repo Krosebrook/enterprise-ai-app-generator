@@ -30,7 +30,7 @@ const providerLogos = {
   heroku: "◉",
 };
 
-export default function DeploymentCard({ deployment, onViewLogs, onVisit }) {
+export default function DeploymentCard({ deployment, onViewLogs, onVisit: _onVisit }) {
   const status = statusConfig[deployment.status] || statusConfig.queued;
   const StatusIcon = status.icon;
 

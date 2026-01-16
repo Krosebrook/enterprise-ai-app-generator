@@ -9,7 +9,6 @@ import {
   Clock, 
   GitBranch,
   GitCommit,
-  Play,
   MoreVertical
 } from 'lucide-react';
 import { format } from 'date-fns';

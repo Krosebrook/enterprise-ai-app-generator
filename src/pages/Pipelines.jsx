@@ -5,12 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   GitBranch, 
   Play, 
   RefreshCw, 
-  Settings, 
   TrendingUp,
   CheckCircle2,
   XCircle,
@@ -18,7 +16,6 @@ import {
 } from 'lucide-react';
 import PipelineCard from '@/components/pipelines/PipelineCard';
 import LogViewer from '@/components/pipelines/LogViewer';
-import { cn } from "@/lib/utils";
 
 export default function Pipelines() {
   const queryClient = useQueryClient();

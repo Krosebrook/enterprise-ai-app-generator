@@ -3,7 +3,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Palette } from 'lucide-react';
 
 const presetColors = [
   '#3b82f6', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',

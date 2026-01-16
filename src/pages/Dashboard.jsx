@@ -16,6 +16,14 @@ import {
 import StatCard from '@/components/dashboard/StatCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 
+/**
+ * Dashboard page component displaying project overview and quick actions
+ * Features:
+ * - Recent projects list with status management
+ * - Statistics cards showing key metrics
+ * - Quick action links to common tasks
+ * @returns {JSX.Element} Dashboard page with projects and statistics
+ */
 export default function Dashboard() {
   const queryClient = useQueryClient();
 

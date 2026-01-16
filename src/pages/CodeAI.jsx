@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
   TestTube2, 
@@ -11,7 +10,6 @@ import {
   FileText, 
   Copy, 
   Loader2,
-  CheckCircle2,
   Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -36,7 +34,7 @@ export default function CodeAI() {
       });
       setOutput(result);
       toast.success('Tests generated successfully');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to generate tests');
     } finally {
       setIsProcessing(false);
@@ -57,7 +55,7 @@ export default function CodeAI() {
       });
       setOutput(result);
       toast.success('Code optimized successfully');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to optimize code');
     } finally {
       setIsProcessing(false);
@@ -78,7 +76,7 @@ export default function CodeAI() {
       });
       setOutput(result);
       toast.success('Documentation generated successfully');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to generate documentation');
     } finally {
       setIsProcessing(false);

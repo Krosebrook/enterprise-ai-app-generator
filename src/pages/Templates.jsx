@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Search, Layers, Filter } from 'lucide-react';
+import { Search, Layers } from 'lucide-react';
 import TemplateCard from '@/components/templates/TemplateCard';
 
 const categories = ['all', 'saas', 'ai', 'e-commerce', 'dashboard', 'mobile'];

@@ -7,9 +7,7 @@ import {
   Code, 
   FileJson, 
   Copy, 
-  CheckCircle2, 
-  ExternalLink,
-  Sparkles,
+  CheckCircle2,
   ListTodo,
   Palette
 } from 'lucide-react';

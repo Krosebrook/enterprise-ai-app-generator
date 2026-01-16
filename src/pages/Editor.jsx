@@ -11,11 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
   Save, 
   Eye, 
-  Code, 
-  Palette,
+  Code,
   Undo,
   Redo,
-  Plus,
   RefreshCw
 } from 'lucide-react';
 import ComponentTree from '@/components/editor/ComponentTree';
