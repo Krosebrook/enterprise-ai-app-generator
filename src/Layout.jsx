@@ -28,6 +28,7 @@ const navItems = [
   { name: 'CI/CD', icon: GitBranch, page: 'Pipelines' },
   { name: 'Editor', icon: Code, page: 'Editor' },
   { name: 'Deploy', icon: Rocket, page: 'Deploy' },
+  { name: 'AI Code Tools', icon: Sparkles, page: 'CodeAI' },
 ];
 
 export default function Layout({ children, currentPageName }) {
