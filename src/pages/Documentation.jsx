@@ -393,7 +393,7 @@ VibeCode offers 12 enterprise-ready templates across 5 categories. Each template
 # Code Editor & AI Assistant
 
 ## Overview
-The integrated Code Editor provides a powerful environment for customizing generated applications with built-in AI assistance.
+The integrated Code Editor provides a powerful environment for customizing generated applications with built-in AI assistance featuring context-aware explanations, architectural pattern recognition, and security analysis.
 
 ## Code Editor Features
 
@@ -414,12 +414,12 @@ The integrated Code Editor provides a powerful environment for customizing gener
 - Auto-save changes
 - Version control integration
 
-## AI Assistant (🌟 New Feature)
+## AI Assistant (🌟 Enhanced Features)
 
 ### Overview
-The AI Assistant uses advanced language models to help you write better code faster. Access it via the sparkle icon in the editor toolbar.
+The AI Assistant uses advanced language models to help you write better code faster with context-aware analysis. Access it via the sparkle icon in the editor toolbar.
 
-### Four Powerful Modes
+### Five Powerful Modes
 
 #### 1. Refactor Mode
 **Purpose**: Improve code structure and maintainability
@@ -429,11 +429,6 @@ The AI Assistant uses advanced language models to help you write better code fas
 - Improve naming conventions
 - Apply design patterns
 
-**Example Prompt**:
-\`\`\`
-"Refactor this component to use custom hooks for state management"
-\`\`\`
-
 #### 2. Debug Mode
 **Purpose**: Find and fix issues automatically
 **Use Cases**:
@@ -442,22 +437,24 @@ The AI Assistant uses advanced language models to help you write better code fas
 - Resolve state management issues
 - Correct TypeScript errors
 
-**Example Prompt**:
-\`\`\`
-"The component re-renders infinitely, help me fix it"
-\`\`\`
+#### 3. Explain Mode (🆕 Enhanced)
+**Purpose**: Deep, context-aware code understanding
+**Includes**:
+- What the code does and why
+- Architectural patterns (MVC, MVVM, Observer, Singleton, etc.)
+- Potential security vulnerabilities specific to React/Node stack
+- Performance implications for your application
+- Stack-specific considerations and best practices
+- Integration points and dependencies
 
-#### 3. Explain Mode
-**Purpose**: Understand complex code
-**Use Cases**:
-- Learn what code does line-by-line
-- Understand patterns and algorithms
-- Get clarity on library usage
-- Document existing code
-
-**Example Prompt**:
+**Example**:
 \`\`\`
-"Explain how this useEffect hook works and what it's doing"
+AI provides comprehensive analysis including:
+✓ Code purpose and flow
+✓ Design patterns used
+✓ Security risks identified
+✓ Performance metrics
+✓ React-specific optimizations
 \`\`\`
 
 #### 4. Improve Mode
@@ -468,12 +465,7 @@ The AI Assistant uses advanced language models to help you write better code fas
 - SEO enhancements
 - Security hardening
 
-**Example Prompt**:
-\`\`\`
-"Suggest performance optimizations for this component"
-\`\`\`
-
-### How to Use AI Assistant
+### How to Use Enhanced AI Assistant
 
 1. **Open the Editor**
    - Navigate to Editor page
@@ -488,45 +480,82 @@ The AI Assistant uses advanced language models to help you write better code fas
    - The AI panel opens on the right
 
 4. **Choose Mode**
-   - Select from Refactor, Debug, Explain, or Improve
-   - Each mode has a default prompt
+   - Select from Refactor, Debug, Explain (Enhanced), or Improve
+   - Explain mode now provides architectural and security analysis
 
 5. **Customize Prompt (Optional)**
-   - Modify the prompt for specific needs
-   - Be as detailed as possible for best results
+   - Add specific context or requirements
+   - AI uses stack knowledge for better suggestions
 
-6. **Generate Suggestions**
-   - Click "Get AI Suggestions"
-   - Wait for the AI to analyze your code
-   - Review the generated suggestions
+6. **Generate Analysis**
+   - Click the mode button
+   - Wait for comprehensive analysis
+   - Review architectural insights and security findings
 
 7. **Apply Changes**
-   - Review the AI-generated code
+   - Review the AI-generated code and insights
    - Click "Apply Code" to integrate changes
-   - Or copy code manually
    - Changes are auto-saved
 
-### Best Practices
+### New: Context-Aware Analysis
+
+The Enhanced Explain Mode now provides:
+
+**Architectural Patterns**
+- Identifies patterns: MVC, MVVM, Observer, Singleton, Factory, Strategy
+- Explains pattern usage in your code
+- Suggests pattern improvements
+
+**Security Analysis**
+- Detects SQL injection risks
+- Identifies XSS vulnerabilities
+- Finds authentication/authorization issues
+- Suggests security best practices
+
+**Performance Insights**
+- Analyzes rendering performance
+- Identifies N+1 query problems
+- Suggests caching strategies
+- Recommends bundle optimizations
+
+## AI-Assisted Template Creation (🆕 New Feature)
+
+When saving a project as a template, AI now:
+- **Generates Professional Descriptions**: Context-aware, SEO-optimized descriptions
+- **Suggests Tags & Categories**: Auto-populated from project analysis
+- **Creates Preview Images**: AI-generated preview based on your UI
+- **Drafts Feature Lists**: Comprehensive feature summaries
+
+## Project Intelligence Dashboard (🆕 New Feature)
+
+View comprehensive project insights:
+- **Timeline Analysis**: Estimated duration, milestones, critical path
+- **Completion Prediction**: Data-driven completion dates with confidence scores
+- **Bottleneck Identification**: Ranked by impact with mitigation strategies
+- **Resource Optimization**: Recommended team structure and allocation
+- **Risk Assessment**: Project-specific risk analysis
+
+## Best Practices
+
+#### For Enhanced Explain Mode
+- Use it to learn architectural patterns
+- Identify security risks early
+- Understand performance trade-offs
+- Get stack-specific recommendations
 
 #### Writing Effective Prompts
-- **Be Specific**: "Fix the infinite loop in useEffect" vs "Fix this"
-- **Add Context**: Mention what you're trying to achieve
-- **One Thing at a Time**: Focus on one issue or improvement
-- **Use Examples**: Show desired input/output if applicable
+- **Be Specific**: Include context about your use case
+- **Add Stack Info**: Mention frameworks/libraries used
+- **Ask for Patterns**: "What patterns does this use?"
+- **Security Focus**: "Are there security issues?"
 
 #### Working with AI Suggestions
-- ✅ Always review generated code
-- ✅ Test changes thoroughly
-- ✅ Use AI as a pair programmer, not autopilot
-- ✅ Learn from suggestions to improve your skills
-- ⚠️ Don't blindly apply all suggestions
-- ⚠️ Verify security-sensitive changes
-
-#### Advanced Tips
-- **Iterate**: Use multiple rounds of AI assistance
-- **Combine Modes**: Refactor → Improve → Explain
-- **Custom Prompts**: Develop your own prompt library
-- **Learn Patterns**: Notice recurring AI suggestions
+- ✅ Review architectural recommendations
+- ✅ Act on security findings immediately
+- ✅ Benchmark before/after performance
+- ✅ Learn from pattern explanations
+- ⚠️ Don't ignore security warnings
+- ⚠️ Test performance optimizations
 
 ## Keyboard Shortcuts
 - **Ctrl/Cmd + S**: Save changes
@@ -534,29 +563,26 @@ The AI Assistant uses advanced language models to help you write better code fas
 - **Ctrl/Cmd + Shift + Z**: Redo
 - **Ctrl/Cmd + /**: Toggle AI Assistant
 
-## Integration with InvokeLLM
-The AI Assistant uses the Base44 InvokeLLM integration, which:
-- Supports multiple AI models
-- Provides intelligent code suggestions
-- Maintains context across conversations
-- Ensures secure, private processing
+## Integration Capabilities
+The AI Assistant uses context from:
+- Your chosen AI model (GPT-4, Claude 3, Gemini Pro)
+- Project stack (React, Node.js, etc.)
+- Selected features and dependencies
+- Code patterns and conventions
 
-## Troubleshooting
+## Advanced Features
 
-### AI Not Responding
-- Check your internet connection
-- Verify API keys are configured
-- Try refreshing the page
+### Context-Aware Suggestions
+- AI learns from your project setup
+- Understands your tech stack
+- Provides stack-specific recommendations
+- Considers your AI model choice
 
-### Suggestions Not Relevant
-- Make prompts more specific
-- Include more context in your request
-- Try a different AI mode
-
-### Changes Not Saving
-- Check for syntax errors
-- Ensure project is selected
-- Verify permissions
+### Iterative Analysis
+- Run multiple analysis passes
+- Combine insights from different modes
+- Build on previous recommendations
+- Refine through iterations
 `;
 
   const contentMap = {
@@ -576,7 +602,7 @@ The AI Assistant uses the Base44 InvokeLLM integration, which:
         <p className="text-slate-400">Learn how to use the Universal AI App Generator</p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-8">
+      <div className="grid lg:grid-cols-4 gap-8 min-h-[70vh]">
         {/* Sidebar Navigation */}
         <div className="space-y-2">
           {docSections.map(section => (
