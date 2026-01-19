@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, MoreVertical, ExternalLink } from 'lucide-react';
+import { Play, Pause, MoreVertical, ExternalLink, Save } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from "@/lib/utils";
 
@@ -54,6 +54,17 @@ export default function ProjectCard({ project, onStatusChange, onSaveAsTemplate 
             : 'Not deployed yet'}
         </span>
         <div className="flex gap-2">
+          {project.status === 'active' && (
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-purple-400 hover:text-purple-300"
+              onClick={() => onSaveAsTemplate?.(project)}
+              title="Save as Template"
+            >
+              <Save className="w-4 h-4" />
+            </Button>
+          )}
           {project.status === 'active' ? (
             <Button 
               size="sm" 
