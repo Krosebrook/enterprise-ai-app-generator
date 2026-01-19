@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
+import ProjectInsights from '@/components/project/ProjectInsights';
 
 /**
  * Dashboard page component displaying project overview and quick actions
@@ -94,7 +95,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Recent Projects */}
+      {/* Recent Projects with AI Insights */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">Recent Projects</h2>
@@ -105,6 +106,13 @@ export default function Dashboard() {
             </Button>
           </Link>
         </div>
+
+        {/* Project Intelligence for First Active Project */}
+        {projects.find(p => p.status === 'active') && (
+          <div className="mb-8">
+            <ProjectInsights project={projects.find(p => p.status === 'active')} />
+          </div>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
