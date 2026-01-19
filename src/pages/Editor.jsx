@@ -14,10 +14,12 @@ import {
   Code,
   Undo,
   Redo,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import ComponentTree from '@/components/editor/ComponentTree';
 import ColorPicker from '@/components/editor/ColorPicker';
+import AIAssistant from '@/components/editor/AIAssistant';
 import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 
@@ -35,6 +37,7 @@ export default function Editor() {
   const [components, setComponents] = useState(mockComponents);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   
   const [editValues, setEditValues] = useState({
@@ -150,6 +153,17 @@ export default function Editor() {
             <Redo className="w-4 h-4" />
           </Button>
           <div className="h-6 w-px bg-slate-800 mx-2" />
+          <Button
+            variant="ghost"
+            onClick={() => setAiAssistantOpen(!aiAssistantOpen)}
+            className={cn(
+              "text-slate-400",
+              aiAssistantOpen && "bg-purple-500/20 text-purple-400"
+            )}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            AI Assistant
+          </Button>
           <Button
             variant="ghost"
             onClick={() => setPreviewMode(!previewMode)}
@@ -321,8 +335,20 @@ export default function Editor() {
           )}
         </div>
 
-        {/* Right Sidebar - Live Preview */}
-        {previewMode && (
+        {/* Right Sidebar - AI Assistant or Live Preview */}
+        {aiAssistantOpen && (
+          <div className="w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
+            <AIAssistant 
+              code={editValues.content}
+              onApplyCode={(code) => {
+                setEditValues({ ...editValues, content: code });
+                setIsDirty(true);
+              }}
+            />
+          </div>
+        )}
+        
+        {previewMode && !aiAssistantOpen && (
           <div className="w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <h3 className="text-white font-semibold flex items-center gap-2">

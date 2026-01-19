@@ -12,7 +12,7 @@ const statusConfig = {
   archived: { color: "bg-red-500/20 text-red-400 border-red-500/30", dot: "bg-red-400" },
 };
 
-export default function ProjectCard({ project, onStatusChange }) {
+export default function ProjectCard({ project, onStatusChange, onSaveAsTemplate }) {
   const status = statusConfig[project.status] || statusConfig.active;
 
   return (
