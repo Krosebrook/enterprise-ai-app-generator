@@ -12,10 +12,12 @@ import {
   TrendingUp,
   CheckCircle2,
   XCircle,
-  Clock
+  Clock,
+  Wand2
 } from 'lucide-react';
 import PipelineCard from '@/components/pipelines/PipelineCard';
 import LogViewer from '@/components/pipelines/LogViewer';
+import AutoPipelineConfig from '@/components/pipelines/AutoPipelineConfig';
 
 export default function Pipelines() {
   const queryClient = useQueryClient();
@@ -103,6 +105,11 @@ export default function Pipelines() {
             Trigger Pipeline
           </Button>
         </div>
+      </div>
+
+      {/* AI Pipeline Generator */}
+      <div className="mb-8">
+        <AutoPipelineConfig projectId={selectedProject !== 'all' ? selectedProject : null} />
       </div>
 
       {/* Stats */}

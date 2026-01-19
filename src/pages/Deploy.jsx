@@ -12,10 +12,12 @@ import {
   Trash2, 
   RefreshCw,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Brain
 } from 'lucide-react';
 import DeploymentCard from '@/components/deployment/DeploymentCard';
 import LogViewer from '@/components/pipelines/LogViewer';
+import DeploymentAnalysis from '@/components/deployment/DeploymentAnalysis';
 import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,6 +38,7 @@ export default function Deploy() {
   const [isDeploying, setIsDeploying] = useState(false);
   const [selectedDeployment, setSelectedDeployment] = useState(null);
   const [logsOpen, setLogsOpen] = useState(false);
+  const [deploymentStrategy, setDeploymentStrategy] = useState('blue-green');
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
@@ -139,8 +142,14 @@ export default function Deploy() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Deployment Form */}
+        {/* Left Column - Form & AI Analysis */}
         <div className="lg:col-span-1 space-y-6">
+          {/* AI Analysis */}
+          <DeploymentAnalysis 
+            projectId={selectedProject} 
+            onStrategySelect={setDeploymentStrategy}
+          />
+          {/* Deployment Form */}
           <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
