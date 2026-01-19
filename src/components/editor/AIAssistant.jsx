@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 const modes = [
   { id: 'refactor', name: 'Refactor', icon: Wand2, color: 'text-purple-400', prompt: 'Refactor the following code to be more efficient, readable, and maintainable. Use modern best practices:' },
   { id: 'debug', name: 'Debug', icon: Bug, color: 'text-red-400', prompt: 'Analyze the following code for bugs, errors, and potential issues. Provide fixes:' },
-  { id: 'explain', name: 'Explain', icon: MessageCircle, color: 'text-blue-400', prompt: 'Explain the following code in detail, including what it does and how it works:' },
+  { id: 'explain', name: 'Explain', icon: MessageCircle, color: 'text-blue-400', prompt: 'Provide a deep, context-aware explanation of the following code including:\n- What it does and why\n- Architectural patterns used (MVC, MVVM, Singleton, Observer, etc.)\n- Potential security vulnerabilities\n- Performance implications for React applications\n- Stack-specific considerations\n\nBe comprehensive and educational:' },
   { id: 'improve', name: 'Improve', icon: TrendingUp, color: 'text-emerald-400', prompt: 'Suggest improvements for the following code (performance, security, best practices):' },
 ];
 
