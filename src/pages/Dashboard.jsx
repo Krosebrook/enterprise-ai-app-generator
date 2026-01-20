@@ -16,6 +16,7 @@ import {
 import StatCard from '@/components/dashboard/StatCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import ProjectInsights from '@/components/project/ProjectInsights';
+import ContextualTooltip from '@/components/onboarding/ContextualTooltip';
 
 /**
  * Dashboard page component displaying project overview and quick actions
@@ -110,7 +111,11 @@ export default function Dashboard() {
         {/* Project Intelligence for First Active Project */}
         {projects.find(p => p.status === 'active') && (
           <div className="mb-8">
-            <ProjectInsights project={projects.find(p => p.status === 'active')} />
+            <ContextualTooltip id="project-insights" autoShow={true} autoShowDelay={3000}>
+              <div>
+                <ProjectInsights project={projects.find(p => p.status === 'active')} />
+              </div>
+            </ContextualTooltip>
           </div>
         )}
 

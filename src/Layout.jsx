@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { 
@@ -16,6 +16,8 @@ import {
   Rocket
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { base44 } from '@/api/base44Client';
+import OnboardingFlow from './components/onboarding/OnboardingFlow';
 
 /**
  * Navigation configuration for the application sidebar
@@ -43,6 +45,27 @@ const navItems = [
  */
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userRole, setUserRole] = useState('user');
+
+  useEffect(() => {
+    checkOnboarding();
+  }, []);
+
+  const checkOnboarding = async () => {
+    try {
+      const user = await base44.auth.me();
+      setUserRole(user.role || 'user');
+      
+      const progress = await base44.entities.OnboardingProgress.filter({ user_email: user.email });
+      
+      if (progress.length === 0 || (!progress[0].is_complete && !progress[0].skipped)) {
+        setShowOnboarding(true);
+      }
+    } catch (error) {
+      console.error('Failed to check onboarding', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex">
