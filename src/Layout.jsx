@@ -142,6 +142,13 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </main>
+
+      {/* Onboarding Flow */}
+      <OnboardingFlow
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        userRole={userRole}
+      />
     </div>
   );
 }
