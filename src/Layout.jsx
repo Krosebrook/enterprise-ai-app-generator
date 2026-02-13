@@ -13,7 +13,9 @@ import {
   Zap,
   GitBranch,
   Code,
-  Rocket
+  Rocket,
+  Brain,
+  Users
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { base44 } from '@/api/base44Client';
@@ -34,6 +36,8 @@ const navItems = [
   { name: 'Editor', icon: Code, page: 'Editor' },
   { name: 'Deploy', icon: Rocket, page: 'Deploy' },
   { name: 'AI Code Tools', icon: Sparkles, page: 'CodeAI' },
+  { name: 'Intelligence', icon: Brain, page: 'Intelligence' },
+  { name: 'Collaboration', icon: Users, page: 'Collaboration' },
 ];
 
 /**
