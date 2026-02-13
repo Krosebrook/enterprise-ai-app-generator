@@ -19,6 +19,8 @@ import StatCard from '@/components/dashboard/StatCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import ProjectInsights from '@/components/project/ProjectInsights';
 import ContextualTooltip from '@/components/onboarding/ContextualTooltip';
+import DynamicTaskCard from '@/components/onboarding/DynamicTaskCard';
+import InteractiveTutorial from '@/components/onboarding/InteractiveTutorial';
 
 /**
  * Dashboard page component displaying project overview and quick actions
@@ -30,6 +32,9 @@ import ContextualTooltip from '@/components/onboarding/ContextualTooltip';
  */
 export default function Dashboard() {
   const queryClient = useQueryClient();
+  const [showTutorial, setShowTutorial] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+  const [onboardingProgress, setOnboardingProgress] = React.useState(null);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
@@ -40,6 +45,30 @@ export default function Dashboard() {
     queryKey: ['templates'],
     queryFn: () => base44.entities.Template.list(),
   });
+
+  React.useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = async () => {
+    try {
+      const userData = await base44.auth.me();
+      setUser(userData);
+      
+      const progress = await base44.entities.OnboardingProgress.filter({ 
+        user_email: userData.email 
+      });
+      
+      if (progress.length > 0) {
+        setOnboardingProgress(progress[0]);
+        setShowTutorial(!progress[0].is_complete && projects.length < 2);
+      } else {
+        setShowTutorial(projects.length < 2);
+      }
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+    }
+  };
 
   const updateMutation = useMutation({
     mutationFn: ({ id, status }) => base44.entities.AppProject.update(id, { status }),
@@ -64,6 +93,33 @@ export default function Dashboard() {
           </Button>
         </Link>
       </div>
+
+      {/* Dynamic Task Recommendation */}
+      {user && showTutorial && (
+        <div className="mb-8">
+          <DynamicTaskCard
+            currentPage="Dashboard"
+            completedSteps={onboardingProgress?.completed_steps || []}
+            userRole={user.role || 'user'}
+            onTaskComplete={(taskTitle) => {
+              console.log('Task completed:', taskTitle);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Interactive Tutorial */}
+      {showTutorial && projects.length === 0 && (
+        <div className="mb-8">
+          <InteractiveTutorial
+            page="Generator"
+            onComplete={(page) => {
+              console.log('Tutorial completed for:', page);
+              setShowTutorial(false);
+            }}
+          />
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

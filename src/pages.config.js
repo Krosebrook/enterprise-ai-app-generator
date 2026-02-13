@@ -48,33 +48,33 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import CodeAI from './pages/CodeAI';
+import Collaboration from './pages/Collaboration';
 import Dashboard from './pages/Dashboard';
 import Deploy from './pages/Deploy';
 import Documentation from './pages/Documentation';
 import Editor from './pages/Editor';
 import Examples from './pages/Examples';
 import Generator from './pages/Generator';
+import Intelligence from './pages/Intelligence';
 import Pipelines from './pages/Pipelines';
 import Scripts from './pages/Scripts';
 import Templates from './pages/Templates';
-import Intelligence from './pages/Intelligence';
-import Collaboration from './pages/Collaboration';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "CodeAI": CodeAI,
+    "Collaboration": Collaboration,
     "Dashboard": Dashboard,
     "Deploy": Deploy,
     "Documentation": Documentation,
     "Editor": Editor,
     "Examples": Examples,
     "Generator": Generator,
+    "Intelligence": Intelligence,
     "Pipelines": Pipelines,
     "Scripts": Scripts,
     "Templates": Templates,
-    "Intelligence": Intelligence,
-    "Collaboration": Collaboration,
 }
 
 export const pagesConfig = {
