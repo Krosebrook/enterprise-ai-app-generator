@@ -11,7 +11,9 @@ import {
   Zap, 
   TrendingUp,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Brain,
+  Shield
 } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 import ProjectCard from '@/components/dashboard/ProjectCard';
@@ -153,26 +155,33 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Link to={createPageUrl('Intelligence')} className="block">
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/40 transition-all group">
+            <Brain className="w-10 h-10 text-purple-400 mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">AI Intelligence</h3>
+            <p className="text-slate-400 text-sm">Risk forecasts, security analysis & reports</p>
+          </div>
+        </Link>
         <Link to={createPageUrl('Templates')} className="block">
           <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 hover:border-blue-500/40 transition-all group">
             <FolderOpen className="w-10 h-10 text-blue-400 mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">Browse Templates</h3>
-            <p className="text-slate-400 text-sm">Explore pre-built templates for quick starts</p>
+            <h3 className="text-lg font-semibold text-white mb-2">AI Marketplace</h3>
+            <p className="text-slate-400 text-sm">Natural language search & AI reviews</p>
           </div>
         </Link>
         <Link to={createPageUrl('Scripts')} className="block">
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/40 transition-all group">
-            <RefreshCw className="w-10 h-10 text-purple-400 mb-4" />
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 hover:border-cyan-500/40 transition-all group">
+            <RefreshCw className="w-10 h-10 text-cyan-400 mb-4" />
             <h3 className="text-lg font-semibold text-white mb-2">Run Scripts</h3>
-            <p className="text-slate-400 text-sm">Validate and manage your configurations</p>
+            <p className="text-slate-400 text-sm">Validate and manage configurations</p>
           </div>
         </Link>
-        <Link to={createPageUrl('Documentation')} className="block">
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 hover:border-cyan-500/40 transition-all group">
-            <Cpu className="w-10 h-10 text-cyan-400 mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">Read Docs</h3>
-            <p className="text-slate-400 text-sm">Learn about VibeCode standards</p>
+        <Link to={createPageUrl('Collaboration')} className="block">
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/40 transition-all group">
+            <Shield className="w-10 h-10 text-green-400 mb-4" />
+            <h3 className="text-lg font-semibold text-white mb-2">Collaboration</h3>
+            <p className="text-slate-400 text-sm">AI code reviews & task assignments</p>
           </div>
         </Link>
       </div>
