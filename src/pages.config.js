@@ -59,6 +59,7 @@ import Intelligence from './pages/Intelligence';
 import Pipelines from './pages/Pipelines';
 import Scripts from './pages/Scripts';
 import Templates from './pages/Templates';
+import AIAdmin from './pages/AIAdmin';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "Pipelines": Pipelines,
     "Scripts": Scripts,
     "Templates": Templates,
+    "AIAdmin": AIAdmin,
 }
 
 export const pagesConfig = {

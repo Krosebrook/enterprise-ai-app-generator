@@ -38,6 +38,7 @@ const navItems = [
   { name: 'AI Code Tools', icon: Sparkles, page: 'CodeAI' },
   { name: 'Intelligence', icon: Brain, page: 'Intelligence' },
   { name: 'Collaboration', icon: Users, page: 'Collaboration' },
+  { name: 'AI Admin', icon: Brain, page: 'AIAdmin' },
 ];
 
 /**
