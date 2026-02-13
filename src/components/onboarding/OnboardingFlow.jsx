@@ -157,55 +157,40 @@ export default function OnboardingFlow({ open, onClose, userRole = 'user' }) {
     setIsGeneratingGuide(true);
     try {
       const user = await base44.auth.me();
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a personalized onboarding guide for a ${userRole} user of VibeCode, an AI app generator platform.
+      
+      // Get user context
+      const activities = await base44.entities.UserActivity.filter({ 
+        user_email: user.email 
+      }).catch(() => []);
+      
+      const projects = await base44.entities.AppProject.filter({ 
+        created_by: user.email 
+      }).catch(() => []);
 
-User: ${user.full_name || user.email}
-Role: ${userRole}
-
-Generate:
-1. **Welcome Message**: Personalized greeting addressing the user's role
-2. **Quick Wins**: 3 actions they should take first based on their role
-3. **Pro Tips**: 3 insider tips to maximize productivity
-4. **Resources**: Recommended learning resources specific to their role
-
-Format as JSON.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            welcome_message: { type: "string" },
-            quick_wins: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  description: { type: "string" }
-                }
-              }
-            },
-            pro_tips: {
-              type: "array",
-              items: { type: "string" }
-            },
-            resources: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  description: { type: "string" }
-                }
-              }
-            }
-          }
-        }
+      // Use new personalized onboarding function
+      const response = await base44.functions.invoke('generatePersonalizedOnboarding', {
+        userRole,
+        selectedTemplate: projects[0]?.template || null,
+        completedSteps: progress?.completed_steps || [],
+        userActivities: activities.slice(0, 5)
       });
 
-      setPersonalizedGuide(result);
-      toast.success('Personalized guide generated!');
+      if (response.data.success) {
+        const guide = response.data.guide;
+        setPersonalizedGuide({
+          welcome_message: guide.welcome_message,
+          quick_wins: guide.recommended_steps.map(step => ({
+            title: step.title,
+            description: step.description
+          })),
+          pro_tips: guide.pro_tips,
+          resources: []
+        });
+        toast.success('Personalized guide generated!');
+      }
     } catch (error) {
       toast.error('Failed to generate guide');
+      console.error(error);
     } finally {
       setIsGeneratingGuide(false);
     }
