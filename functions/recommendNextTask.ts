@@ -1,34 +1,35 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
-    
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { currentPage, completedSteps, userRole, recentProjects } = await req.json();
+    const { currentPage, completedSteps, userRole, recentProjects, templateCategory, userGoal, learningStyle } = await req.json();
 
-    const prompt = `As an AI onboarding assistant for an enterprise app development platform, recommend the next best task for a user.
+    const prompt = `You are an intelligent onboarding assistant for VibeCode, an enterprise AI app generation platform.
 
-Context:
+Recommend the single most valuable next task for this user right now.
+
+User Context:
 - Current Page: ${currentPage}
-- User Role: ${userRole}
-- Completed Steps: ${completedSteps?.join(', ') || 'None'}
-- Recent Projects: ${recentProjects || 0}
+- Role: ${userRole}
+- Completed Steps: ${completedSteps?.join(', ') || 'None yet'}
+- Recent Projects Count: ${recentProjects || 0}
+- Template Category Chosen: ${templateCategory || 'Not set yet'}
+- Goal: ${userGoal || 'Not set yet'}
+- Learning Style: ${learningStyle || 'mixed'}
 
-Provide a single, actionable next step that will help them learn the platform effectively.
-
-Return JSON with:
-{
-  "task_title": "Clear, action-oriented title",
-  "task_description": "Brief description (1 sentence)",
-  "page_to_visit": "PageName or null if they should stay",
-  "why_important": "Brief explanation why this matters",
-  "estimated_minutes": number
-}`;
+Rules:
+- If recentProjects === 0 and currentPage === 'Dashboard', recommend going to Generator to create first app
+- If templateCategory is set, tailor the task to that category (e.g. for 'ai' → explore Intelligence page)
+- If userGoal is 'deploy_prod', prioritize Deploy/Pipelines pages
+- If userGoal is 'explore_ai', prioritize CodeAI or Intelligence pages
+- Do NOT recommend completing a step already in completedSteps
+- task_title must be action-oriented (start with a verb)
+- page_to_visit must be one of: Dashboard, Generator, Templates, Deploy, Pipelines, Editor, Intelligence, Collaboration, Scripts, CodeAI, AIAdmin — or null if they should stay
+- category: one of 'setup', 'explore', 'deploy', 'learn', 'collaborate'`;
 
     const aiResponse = await base44.integrations.Core.InvokeLLM({
       prompt,
@@ -39,21 +40,16 @@ Return JSON with:
           task_description: { type: "string" },
           page_to_visit: { type: "string" },
           why_important: { type: "string" },
-          estimated_minutes: { type: "number" }
+          estimated_minutes: { type: "number" },
+          category: { type: "string" }
         }
       }
     });
 
-    return Response.json({
-      success: true,
-      recommendation: aiResponse
-    });
+    return Response.json({ success: true, recommendation: aiResponse });
 
   } catch (error) {
     console.error('Task recommendation error:', error);
-    return Response.json({ 
-      error: error.message,
-      success: false 
-    }, { status: 500 });
+    return Response.json({ error: error.message, success: false }, { status: 500 });
   }
 });

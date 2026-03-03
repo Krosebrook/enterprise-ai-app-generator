@@ -1,15 +1,12 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
-    
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { userRole, selectedTemplate, userGoal, completedSteps = [], userActivities = [] } = await req.json();
+    const { userRole, selectedTemplate, userGoal, learningStyle = 'mixed', completedSteps = [] } = await req.json();
 
     const templateLabels = {
       saas: 'SaaS Application',
@@ -26,23 +23,35 @@ Deno.serve(async (req) => {
       deploy_prod: 'Deploy to Production'
     };
 
+    const learningLabels = {
+      visual: 'visual learner (prefers screenshots, diagrams)',
+      'hands-on': 'hands-on learner (prefers doing over reading)',
+      reading: 'reading learner (prefers detailed explanations)',
+      mixed: 'mixed learner (prefers balanced approach)'
+    };
+
     const templateLabel = templateLabels[selectedTemplate] || selectedTemplate || 'Not specified';
     const goalLabel = goalLabels[userGoal] || userGoal || 'Not specified';
+    const learningLabel = learningLabels[learningStyle] || 'mixed learner';
 
-    const prompt = `Create a highly personalized onboarding guide for a user of VibeCode, an enterprise AI app generation platform.
+    const prompt = `You are an expert onboarding coach for VibeCode — an enterprise AI app generation platform.
 
-User Profile:
-- Role: ${userRole}
-- App type they want to build: ${templateLabel}
+Create a highly personalized onboarding guide for this user:
+- Role: ${userRole === 'admin' ? 'Admin (manages team, oversees platform)' : 'Developer (builds and ships apps)'}
+- App type to build: ${templateLabel}
 - Primary goal: ${goalLabel}
-- Already completed: ${completedSteps.join(', ') || 'Nothing yet (brand new user)'}
+- Learning style: ${learningLabel}
+- Already completed: ${completedSteps.join(', ') || 'Nothing yet'}
 
-Your task: Generate 3-4 concise, ordered steps that directly map to their stated goal and template choice.
-Each step must be actionable and specific to the template category they chose.
-Pro tips should be insider knowledge relevant to their specific template + goal combination.
-Welcome message should feel personal and acknowledge their specific goal.
-
-Do not be generic. Reference their chosen template type and goal explicitly.`;
+Instructions:
+- Generate exactly 4 steps, ordered by logical progression for their template+goal combo
+- Each step must reference the specific template category (e.g. for SaaS, mention subscription flows; for AI products, mention LLM config)
+- For hands-on learners: steps should be action-first with minimal reading
+- For reading learners: add more context/explanation in descriptions
+- Pro tips must be insider knowledge specific to the template+goal combo, NOT generic advice
+- page_hint should be the exact page name in the app (Dashboard, Generator, Templates, Deploy, Pipelines, Editor, Intelligence, Collaboration, Scripts, CodeAI, AIAdmin)
+- estimated_minutes is realistic (not fake-fast)
+- welcome_message should mention both the template type AND goal, feel warm and specific`;
 
     const aiResponse = await base44.integrations.Core.InvokeLLM({
       prompt,
@@ -50,6 +59,7 @@ Do not be generic. Reference their chosen template type and goal explicitly.`;
         type: "object",
         properties: {
           welcome_message: { type: "string" },
+          estimated_completion_minutes: { type: "number" },
           recommended_steps: {
             type: "array",
             items: {
@@ -57,29 +67,23 @@ Do not be generic. Reference their chosen template type and goal explicitly.`;
               properties: {
                 title: { type: "string" },
                 description: { type: "string" },
-                priority: { type: "string" }
+                priority: { type: "string", enum: ["high", "medium", "low"] },
+                page_hint: { type: "string" },
+                action_label: { type: "string" },
+                contextual_tip: { type: "string" }
               }
             }
           },
-          pro_tips: {
-            type: "array",
-            items: { type: "string" }
-          },
-          estimated_completion_time: { type: "number" }
+          pro_tips: { type: "array", items: { type: "string" } },
+          focus_areas: { type: "array", items: { type: "string" } }
         }
       }
     });
 
-    return Response.json({
-      success: true,
-      guide: aiResponse
-    });
+    return Response.json({ success: true, guide: aiResponse });
 
   } catch (error) {
     console.error('Onboarding generation error:', error);
-    return Response.json({ 
-      error: error.message,
-      success: false 
-    }, { status: 500 });
+    return Response.json({ error: error.message, success: false }, { status: 500 });
   }
 });
