@@ -18,12 +18,12 @@ export default function Intelligence() {
   const activeProjects = projects.filter(p => p.status === 'active');
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Brain className="w-8 h-8 text-purple-400" />
-          <h1 className="text-3xl font-bold text-white">Project Intelligence Center</h1>
+        <div className="flex flex-wrap items-center gap-3 mb-2">
+          <Brain className="w-8 h-8 text-purple-400 flex-shrink-0" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Project Intelligence Center</h1>
         </div>
         <p className="text-slate-400">AI-powered analytics, risk forecasting, and security analysis</p>
       </div>

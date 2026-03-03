@@ -76,14 +76,14 @@ export default function Examples() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Examples</h1>
         <p className="text-slate-400">Pre-built configurations to get you started quickly</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Example List */}
         <div className="space-y-4">
           {examples.map(example => {

@@ -134,14 +134,14 @@ export default function Deploy() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Deploy</h1>
         <p className="text-slate-400">Deploy your applications to production</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left Column - Form & AI Analysis */}
         <div className="lg:col-span-1 space-y-6">
           {/* AI Analysis */}

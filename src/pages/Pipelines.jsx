@@ -75,16 +75,16 @@ export default function Pipelines() {
     : 0;
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">CI/CD Pipelines</h1>
           <p className="text-slate-400">Monitor your deployment pipelines</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3 w-full sm:w-auto">
           <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger className="w-48 bg-slate-900/50 border-slate-800 text-white">
+            <SelectTrigger className="w-full sm:w-48 bg-slate-900/50 border-slate-800 text-white">
               <SelectValue placeholder="All Projects" />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700">
