@@ -167,10 +167,10 @@ export default function Layout({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main 
+      <main
         className={cn(
-          "flex-1 transition-all duration-300",
-          collapsed ? "ml-20" : "ml-64"
+          "flex-1 transition-all duration-300 pt-14 lg:pt-0",
+          collapsed ? "lg:ml-20" : "lg:ml-64"
         )}
       >
         {/* Background Effects */}
