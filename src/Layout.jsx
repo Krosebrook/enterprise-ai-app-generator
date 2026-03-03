@@ -154,8 +154,8 @@ export default function Layout({ children, currentPageName }) {
           })}
         </nav>
 
-        {/* Collapse Button */}
-        <div className="p-4 border-t border-slate-800/50">
+        {/* Collapse Button — desktop only */}
+        <div className="p-4 border-t border-slate-800/50 hidden lg:block">
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
