@@ -12,8 +12,10 @@ import ReactMarkdown from 'react-markdown';
 
 const docSections = [
   { id: 'quickstart', name: 'Quickstart', icon: Rocket },
+  { id: 'onboarding', name: 'Onboarding & AI Guide', icon: Rocket },
   { id: 'templates', name: 'Templates', icon: FileText },
   { id: 'editor', name: 'Code Editor & AI', icon: Shield },
+  { id: 'ai_admin', name: 'AI Admin Center', icon: Shield },
   { id: 'standard', name: 'VibeCode Standard', icon: Shield },
   { id: 'changelog', name: 'Changelog', icon: FileText },
   { id: 'readme', name: 'README', icon: Book },
@@ -130,6 +132,32 @@ Routes requests to the appropriate template configuration.
 
 const changelogContent = `
 # Changelog
+
+## [3.0.0] - 2026-03-03
+
+### Added
+- **AI-Driven Personalized Onboarding** — Multi-step flow with template-category and goal selection; AI generates a custom guide per user
+- **Dynamic Task Recommendations** — DynamicTaskCard banner on Dashboard with session-cached AI task recommendations
+- **AI Version Control** — Semantic versioning engine with AI-generated release notes (generateReleaseNotes function)
+- **AI Role Suggestions** — Activity-based role recommendation for team members (suggestUserRole function)
+- **UX Insights Panel** — Aggregate UX analytics analysis with friction detection and improvement recommendations (analyzeUXPatterns function)
+- **AI Admin Center** — Unified tabbed interface for version control, role management, and UX insights
+- **OnboardingProgress entity** — Persists per-user onboarding state, guide payload, completed steps, and skip status
+- **UXAnalytics entity** — Stores per-session interaction data, navigation paths, and friction points
+- **RoleSuggestion entity** — Records AI-generated role suggestions with confidence scores and metrics
+
+### Changed
+- Dashboard showTutorial logic now correctly re-evaluates after projects load (race condition fixed)
+- OnboardingFlow restored to guide phase only when guide has valid recommended_steps content
+- RoleSuggestionsPanel uses functional setState updates to prevent stale closure bugs
+- AIAdmin page converted from static grid to dynamic tabbed interface with live template selector
+
+### Fixed
+- Onboarding re-opening guide phase on empty personalized_guide objects
+- Dashboard tutorial banner showing for users who already skipped onboarding
+- Stale loading/suggestions state in RoleSuggestionsPanel concurrent requests
+
+---
 
 ## [2.0.0] - 2026-01-19
 
@@ -585,10 +613,184 @@ The AI Assistant uses context from:
 - Refine through iterations
 `;
 
+  const onboardingContent = `
+# AI-Driven Personalized Onboarding
+
+## Overview
+VibeCode includes a fully AI-personalized onboarding flow that adapts to every new user's role, goals, and template choices. It is triggered automatically on first login and can be re-triggered from the dashboard.
+
+## How It Works
+
+### Step 1 — Welcome
+Users are greeted with a role-aware welcome screen (Admin vs Developer). They choose to personalize their experience or skip directly to the dashboard.
+
+### Step 2 — Intent (What to Build)
+Users select the category of app they want to build:
+- **SaaS App** — Subscription & recurring revenue products
+- **AI Product** — LLM-powered tools & agents
+- **E-Commerce** — Online storefronts & marketplaces
+- **Analytics Dashboard** — Data visualization & reporting
+- **Mobile App** — iOS & Android applications
+
+This selection drives which templates, tips, and tutorials are surfaced.
+
+### Step 3 — Goal (Primary Objective)
+Users pick their primary goal:
+- **Ship Something Fast** — Prioritizes Generator and Deploy steps
+- **Learn the Platform** — Highlights Documentation and Examples
+- **Explore AI Features** — Surfaces Intelligence and AI Code Tools
+- **Deploy to Production** — Leads to CI/CD and Deploy pages
+
+### Step 4 — AI Guide Generation
+The platform calls the \`generatePersonalizedOnboarding\` backend function with:
+- User role (admin/user)
+- Selected template category
+- Selected goal
+- Previously completed steps
+
+The AI returns a JSON payload with:
+- Personalized welcome message referencing the user's specific goal
+- 3–4 ordered, actionable recommended steps
+- Template-specific pro tips
+
+Progress is persisted in the **OnboardingProgress** entity linked to the user's email.
+
+### Step 5 — Interactive Guide
+The guide is displayed as a checklist of steps. Users can:
+- Mark steps complete individually
+- See high-priority items highlighted in orange
+- Read pro tips specific to their template + goal combination
+
+## Dynamic Task Recommendations
+
+A compact **DynamicTaskCard** banner appears on the Dashboard for users with fewer than 2 projects. It:
+- Calls \`recommendNextTask\` on mount (with session-level caching to avoid repeat AI calls)
+- Displays a single action-oriented task with estimated time
+- Provides a direct navigation link to the relevant page
+- Is dismissible — dismissed state persists for the session
+
+## Backend Functions
+
+### \`generatePersonalizedOnboarding\`
+- **Auth**: Requires authenticated user
+- **Input**: \`{ userRole, selectedTemplate, userGoal, completedSteps, userActivities }\`
+- **Output**: \`{ success, guide: { welcome_message, recommended_steps[], pro_tips[], estimated_completion_time } }\`
+
+### \`recommendNextTask\`
+- **Auth**: Requires authenticated user
+- **Input**: \`{ currentPage, completedSteps, userRole, recentProjects }\`
+- **Output**: \`{ success, recommendation: { task_title, task_description, page_to_visit, why_important, estimated_minutes } }\`
+
+## Entity: OnboardingProgress
+Stores per-user onboarding state. Key fields:
+| Field | Type | Description |
+|---|---|---|
+| user_email | string | Linked user |
+| completed_steps | string[] | Titles of completed guide steps |
+| is_complete | boolean | Whether onboarding is fully done |
+| skipped | boolean | Whether user skipped the flow |
+| personalized_guide | object | Full AI-generated guide payload |
+| role | string | admin or user |
+`;
+
+  const aiAdminContent = `
+# AI Admin Center
+
+## Overview
+The AI Admin Center (\`/AIAdmin\`) consolidates three AI-powered administration capabilities into a single tabbed interface. It is accessible only to users with the **admin** role via the sidebar.
+
+---
+
+## Tab 1 — Version Control
+
+### Purpose
+AI-assisted semantic versioning and release note generation for templates.
+
+### How to Use
+1. Select a template from the dropdown (populated from the Templates entity)
+2. Add one or more changes using the type selector + description field
+3. Click **Generate Release Notes**
+
+### Change Types
+| Type | Triggers | Example |
+|---|---|---|
+| \`feature\` | Minor version bump | Added dark mode support |
+| \`fix\` | Patch version bump | Fixed login redirect bug |
+| \`breaking\` | Major version bump | Removed legacy API endpoint |
+| \`docs\` | Patch version bump | Updated README |
+| \`refactor\` | Patch version bump | Extracted shared utility |
+
+### AI Output
+- **Suggested next version** — Computed via semantic versioning rules (major/minor/patch)
+- **Markdown release notes** — Professional, structured release notes generated by the LLM
+- **Version strategy label** — "major", "minor", or "patch"
+
+### Backend Function: \`generateReleaseNotes\`
+- **Auth**: Requires authenticated user
+- **Input**: \`{ templateName, currentVersion, changes[] }\`
+- **Output**: \`{ success, suggested_version, release_notes (markdown), version_strategy }\`
+
+---
+
+## Tab 2 — Role Suggestions
+
+### Purpose
+Automatically analyze team members' platform activity and suggest appropriate roles (project_manager, lead_developer, contributor, reviewer, admin).
+
+### How to Use
+1. All registered users are listed automatically
+2. Click **Analyze** next to any user
+3. The AI reviews their activity metrics:
+   - Projects created
+   - Code reviews performed
+   - Deployments triggered
+   - Collaboration events
+4. Receive a role suggestion with confidence score, reasoning, and permission set
+
+### Backend Function: \`suggestUserRole\`
+- **Auth**: Admin only (403 if non-admin)
+- **Input**: \`{ userEmail }\`
+- **Output**: \`{ success, suggestion: { suggested_role, confidence_score, reasoning, suggested_permissions, activity_metrics } }\`
+
+---
+
+## Tab 3 — UX Insights
+
+### Purpose
+Analyze aggregated user interaction data stored in the **UXAnalytics** entity to surface friction points and improvement recommendations.
+
+### How to Use
+1. Select a specific page or "All" to analyze the entire platform
+2. Click **Analyze**
+3. Review the output:
+   - **Usability Score** (0–100) — Visual progress bar
+   - **Friction Analysis** — AI narrative on where users struggle
+   - **Recommendations** — Actionable improvement list
+   - **Quick Wins** — Immediately implementable fixes
+
+### Entity: UXAnalytics
+Stores per-session interaction data. Key fields:
+| Field | Description |
+|---|---|
+| page | Page name |
+| user_email | Session user |
+| session_duration | Seconds spent |
+| navigation_path | Array of pages visited in order |
+| friction_points | Array of \`{ location, issue, severity }\` objects |
+| interactions | Array of \`{ element, action, timestamp }\` |
+
+### Backend Function: \`analyzeUXPatterns\`
+- **Auth**: Admin only (403 if non-admin)
+- **Input**: \`{ page (optional), timeRange }\`
+- **Output**: \`{ success, insights: { usability_score, friction_analysis, recommendations, quick_wins }, metrics }\`
+`;
+
   const contentMap = {
     quickstart: quickstartContent,
+    onboarding: onboardingContent,
     templates: templatesContent,
     editor: editorContent,
+    ai_admin: aiAdminContent,
     standard: standardContent,
     changelog: changelogContent,
     readme: readmeContent,
