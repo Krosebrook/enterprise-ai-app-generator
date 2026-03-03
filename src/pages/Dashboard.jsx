@@ -45,9 +45,20 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Template.list(),
   });
 
+  // Load user + onboarding state only once
   React.useEffect(() => {
     loadUserData();
   }, []);
+
+  // Re-evaluate showTutorial once projects have actually loaded
+  React.useEffect(() => {
+    if (!user || isLoading) return;
+    if (onboardingProgress) {
+      setShowTutorial(!onboardingProgress.is_complete && !onboardingProgress.skipped && projects.length < 2);
+    } else {
+      setShowTutorial(projects.length < 2);
+    }
+  }, [projects, isLoading, user, onboardingProgress]);
 
   const loadUserData = async () => {
     try {
@@ -60,9 +71,6 @@ export default function Dashboard() {
       
       if (progress.length > 0) {
         setOnboardingProgress(progress[0]);
-        setShowTutorial(!progress[0].is_complete && projects.length < 2);
-      } else {
-        setShowTutorial(projects.length < 2);
       }
     } catch (error) {
       console.error('Failed to load user data:', error);

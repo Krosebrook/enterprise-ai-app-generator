@@ -25,18 +25,18 @@ export default function RoleSuggestionsPanel() {
   };
 
   const analyzUser = async (userEmail) => {
+    // Use functional updates to avoid stale closure on loading/suggestions state
+    setLoading(prev => ({ ...prev, [userEmail]: true }));
     try {
-      setLoading({ ...loading, [userEmail]: true });
       const response = await base44.functions.invoke('suggestUserRole', { userEmail });
-
       if (response.data.success) {
-        setSuggestions({ ...suggestions, [userEmail]: response.data.suggestion });
+        setSuggestions(prev => ({ ...prev, [userEmail]: response.data.suggestion }));
         toast.success('Role suggestion generated!');
       }
     } catch (error) {
       toast.error('Failed to analyze user');
     } finally {
-      setLoading({ ...loading, [userEmail]: false });
+      setLoading(prev => ({ ...prev, [userEmail]: false }));
     }
   };
 

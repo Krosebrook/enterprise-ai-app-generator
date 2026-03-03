@@ -50,8 +50,10 @@ export default function OnboardingFlow({ open, onClose, userRole = 'user' }) {
       if (existing.length > 0) {
         setProgress(existing[0]);
         setCompletedSteps(existing[0].completed_steps || []);
-        if (existing[0].personalized_guide) {
-          setPersonalizedGuide(existing[0].personalized_guide);
+        // Only restore guide phase if the guide has actual content
+        const guide = existing[0].personalized_guide;
+        if (guide?.recommended_steps?.length > 0) {
+          setPersonalizedGuide(guide);
           setPhase('guide');
         }
       }
