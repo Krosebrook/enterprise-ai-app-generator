@@ -1,392 +1,465 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Sparkles, 
-  ArrowRight, 
-  ArrowLeft, 
-  X, 
-  CheckCircle2,
-  Loader2,
-  Rocket,
-  User,
-  Shield
+import {
+  Sparkles, ArrowRight, ArrowLeft, CheckCircle2, Loader2,
+  Rocket, Zap, ShoppingCart, BarChart3, Smartphone, Brain,
+  BookOpen, FlaskConical, Globe, Shield, User, Check
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
-const roleBasedSteps = {
-  admin: [
-    { 
-      id: 'welcome', 
-      title: 'Welcome to VibeCode', 
-      description: 'As an admin, you have full control over app generation, templates, and deployment.',
-      icon: Rocket,
-      action: 'Get Started'
-    },
-    { 
-      id: 'generate', 
-      title: 'Generate Your First App', 
-      description: 'Use AI to create applications from templates. Navigate to the Generator page to start.',
-      icon: Sparkles,
-      page: 'Generator',
-      action: 'Go to Generator'
-    },
-    { 
-      id: 'templates', 
-      title: 'Explore Templates', 
-      description: 'Browse pre-built templates or save your projects as reusable templates.',
-      icon: User,
-      page: 'Templates',
-      action: 'View Templates'
-    },
-    { 
-      id: 'editor', 
-      title: 'Code Editor & AI', 
-      description: 'Edit components with AI assistance for refactoring, debugging, and optimization.',
-      icon: Sparkles,
-      page: 'Editor',
-      action: 'Open Editor'
-    },
-    { 
-      id: 'deploy', 
-      title: 'Deploy Apps', 
-      description: 'Deploy to production with one click using Vercel, Netlify, or AWS.',
-      icon: Rocket,
-      page: 'Deploy',
-      action: 'Deploy Now'
-    }
-  ],
-  user: [
-    { 
-      id: 'welcome', 
-      title: 'Welcome to VibeCode', 
-      description: 'Start building AI-powered applications in minutes with our templates.',
-      icon: Rocket,
-      action: 'Get Started'
-    },
-    { 
-      id: 'generate', 
-      title: 'Generate Your First App', 
-      description: 'Choose a template and let AI build your application automatically.',
-      icon: Sparkles,
-      page: 'Generator',
-      action: 'Create App'
-    },
-    { 
-      id: 'dashboard', 
-      title: 'Manage Projects', 
-      description: 'View and manage all your generated applications from the dashboard.',
-      icon: User,
-      page: 'Dashboard',
-      action: 'View Dashboard'
-    },
-    { 
-      id: 'examples', 
-      title: 'Learn from Examples', 
-      description: 'Explore example applications to understand what you can build.',
-      icon: Sparkles,
-      page: 'Examples',
-      action: 'See Examples'
-    }
-  ]
-};
+const templateCategories = [
+  { id: 'saas', label: 'SaaS App', icon: Rocket, color: 'from-blue-500 to-cyan-500', description: 'Subscription & recurring revenue products' },
+  { id: 'ai', label: 'AI Product', icon: Brain, color: 'from-purple-500 to-pink-500', description: 'LLM-powered tools & agents' },
+  { id: 'e-commerce', label: 'E-Commerce', icon: ShoppingCart, color: 'from-orange-500 to-yellow-500', description: 'Online storefronts & marketplaces' },
+  { id: 'dashboard', label: 'Analytics Dashboard', icon: BarChart3, color: 'from-green-500 to-emerald-500', description: 'Data visualization & reporting' },
+  { id: 'mobile', label: 'Mobile App', icon: Smartphone, color: 'from-pink-500 to-rose-500', description: 'iOS & Android applications' },
+];
+
+const userGoals = [
+  { id: 'build_fast', label: 'Ship Something Fast', icon: Zap, description: 'I need a working product ASAP' },
+  { id: 'learn_platform', label: 'Learn the Platform', icon: BookOpen, description: 'I want to understand all capabilities' },
+  { id: 'explore_ai', label: 'Explore AI Features', icon: FlaskConical, description: 'I\'m curious about AI integrations' },
+  { id: 'deploy_prod', label: 'Deploy to Production', icon: Globe, description: 'I have an existing app to deploy' },
+];
+
+const PHASES = ['welcome', 'intent', 'goal', 'generating', 'guide'];
 
 export default function OnboardingFlow({ open, onClose, userRole = 'user' }) {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isGeneratingGuide, setIsGeneratingGuide] = useState(false);
+  const [phase, setPhase] = useState('welcome');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedGoal, setSelectedGoal] = useState(null);
   const [personalizedGuide, setPersonalizedGuide] = useState(null);
   const [progress, setProgress] = useState(null);
-
-  const steps = roleBasedSteps[userRole] || roleBasedSteps.user;
-  const currentStep = steps[currentStepIndex];
-  const progressPercent = ((currentStepIndex + 1) / steps.length) * 100;
+  const [completedSteps, setCompletedSteps] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (open) {
-      loadProgress();
-    }
+    if (open) initSession();
   }, [open]);
 
-  const loadProgress = async () => {
+  const initSession = async () => {
     try {
-      const user = await base44.auth.me();
-      const existing = await base44.entities.OnboardingProgress.filter({ user_email: user.email });
-      
+      const u = await base44.auth.me();
+      setUser(u);
+      const existing = await base44.entities.OnboardingProgress.filter({ user_email: u.email });
       if (existing.length > 0) {
         setProgress(existing[0]);
-        const lastStepIndex = steps.findIndex(s => s.id === existing[0].current_step);
-        if (lastStepIndex >= 0) {
-          setCurrentStepIndex(lastStepIndex);
+        setCompletedSteps(existing[0].completed_steps || []);
+        if (existing[0].personalized_guide) {
+          setPersonalizedGuide(existing[0].personalized_guide);
+          setPhase('guide');
         }
       }
-    } catch (error) {
-      console.error('Failed to load progress', error);
+    } catch (e) {
+      console.error('Failed to init onboarding session', e);
     }
   };
 
-  const saveProgress = async (stepId, completed = false) => {
+  const generateGuide = async () => {
+    setPhase('generating');
     try {
-      const user = await base44.auth.me();
-      
-      if (progress) {
-        await base44.entities.OnboardingProgress.update(progress.id, {
-          current_step: stepId,
-          completed_steps: [...new Set([...progress.completed_steps, stepId])],
-          is_complete: completed
-        });
-      } else {
-        await base44.entities.OnboardingProgress.create({
-          user_email: user.email,
-          current_step: stepId,
-          completed_steps: [stepId],
-          is_complete: completed,
-          role: userRole,
-          personalized_guide: personalizedGuide
-        });
-      }
-    } catch (error) {
-      console.error('Failed to save progress', error);
-    }
-  };
-
-  const generatePersonalizedGuide = async () => {
-    setIsGeneratingGuide(true);
-    try {
-      const user = await base44.auth.me();
-      
-      // Get user context
-      const activities = await base44.entities.UserActivity.filter({ 
-        user_email: user.email 
-      }).catch(() => []);
-      
-      const projects = await base44.entities.AppProject.filter({ 
-        created_by: user.email 
-      }).catch(() => []);
-
-      // Use new personalized onboarding function
+      const u = user || await base44.auth.me();
       const response = await base44.functions.invoke('generatePersonalizedOnboarding', {
         userRole,
-        selectedTemplate: projects[0]?.template || null,
-        completedSteps: progress?.completed_steps || [],
-        userActivities: activities.slice(0, 5)
+        selectedTemplate: selectedCategory,
+        userGoal: selectedGoal,
+        completedSteps: [],
+        userActivities: []
       });
 
       if (response.data.success) {
         const guide = response.data.guide;
-        setPersonalizedGuide({
-          welcome_message: guide.welcome_message,
-          quick_wins: guide.recommended_steps.map(step => ({
-            title: step.title,
-            description: step.description
-          })),
-          pro_tips: guide.pro_tips,
-          resources: []
-        });
-        toast.success('Personalized guide generated!');
+        setPersonalizedGuide(guide);
+
+        // Persist to entity
+        const progressData = {
+          user_email: u.email,
+          role: userRole,
+          current_step: 'guide',
+          completed_steps: [],
+          is_complete: false,
+          personalized_guide: guide,
+          skipped: false
+        };
+
+        if (progress) {
+          await base44.entities.OnboardingProgress.update(progress.id, progressData);
+        } else {
+          const created = await base44.entities.OnboardingProgress.create(progressData);
+          setProgress(created);
+        }
+
+        setPhase('guide');
+      } else {
+        throw new Error('Guide generation failed');
       }
     } catch (error) {
-      toast.error('Failed to generate guide');
-      console.error(error);
-    } finally {
-      setIsGeneratingGuide(false);
+      console.error('Failed to generate guide:', error);
+      toast.error('Failed to generate guide, using defaults');
+      setPhase('guide');
     }
   };
 
-  const handleNext = () => {
-    if (currentStepIndex < steps.length - 1) {
-      saveProgress(steps[currentStepIndex + 1].id);
-      setCurrentStepIndex(currentStepIndex + 1);
-    } else {
-      saveProgress(currentStep.id, true);
-      toast.success('Onboarding complete! 🎉');
-      onClose();
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
-      saveProgress(steps[currentStepIndex - 1].id);
+  const markStepComplete = async (stepTitle) => {
+    const newCompleted = [...new Set([...completedSteps, stepTitle])];
+    setCompletedSteps(newCompleted);
+    if (progress) {
+      await base44.entities.OnboardingProgress.update(progress.id, {
+        completed_steps: newCompleted,
+        is_complete: newCompleted.length >= (personalizedGuide?.recommended_steps?.length || 3)
+      });
     }
   };
 
   const handleSkip = async () => {
     try {
-      const user = await base44.auth.me();
-      await base44.entities.OnboardingProgress.create({
-        user_email: user.email,
-        skipped: true,
-        role: userRole
-      });
-      onClose();
-    } catch (error) {
-      console.error('Failed to skip', error);
+      const u = user || await base44.auth.me();
+      if (progress) {
+        await base44.entities.OnboardingProgress.update(progress.id, { skipped: true });
+      } else {
+        await base44.entities.OnboardingProgress.create({ user_email: u.email, skipped: true, role: userRole });
+      }
+    } catch (e) {
+      console.error('Skip error', e);
     }
+    onClose();
   };
 
-  const StepIcon = currentStep?.icon || Sparkles;
+  const handleComplete = async () => {
+    if (progress) {
+      await base44.entities.OnboardingProgress.update(progress.id, { is_complete: true });
+    }
+    toast.success('You\'re all set! Let\'s build something great.');
+    onClose();
+  };
+
+  if (!open) return null;
+
+  const phaseIndex = PHASES.indexOf(phase);
+  const progressPct = Math.round((phaseIndex / (PHASES.length - 1)) * 100);
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-3xl">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                <StepIcon className="w-6 h-6 text-white" />
+    <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+      {/* Background glow effects */}
+      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative w-full max-w-2xl">
+        {/* Progress bar at top */}
+        {phase !== 'welcome' && (
+          <div className="mb-6">
+            <div className="flex justify-between text-xs text-slate-500 mb-2">
+              <span>Setting up your experience</span>
+              <span>{progressPct}%</span>
+            </div>
+            <Progress value={progressPct} className="h-1 bg-slate-800" />
+          </div>
+        )}
+
+        <AnimatePresence mode="wait">
+          {/* WELCOME */}
+          {phase === 'welcome' && (
+            <motion.div
+              key="welcome"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.4 }}
+              className="text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-2xl shadow-blue-500/30">
+                <Sparkles className="w-10 h-10 text-white" />
               </div>
-              {currentStep?.title}
-            </DialogTitle>
-            <Badge className={cn(
-              "text-xs",
-              userRole === 'admin' ? "bg-purple-500/20 text-purple-300" : "bg-blue-500/20 text-blue-300"
-            )}>
-              {userRole === 'admin' ? (
-                <><Shield className="w-3 h-3 mr-1" /> Admin</>
-              ) : (
-                <><User className="w-3 h-3 mr-1" /> User</>
-              )}
-            </Badge>
-          </div>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          {/* Progress Bar */}
-          <div>
-            <div className="flex justify-between text-xs text-slate-400 mb-2">
-              <span>Step {currentStepIndex + 1} of {steps.length}</span>
-              <span>{Math.round(progressPercent)}% Complete</span>
-            </div>
-            <Progress value={progressPercent} className="h-2" />
-          </div>
-
-          {/* Current Step Content */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700">
-            <p className="text-slate-300 text-lg leading-relaxed">
-              {currentStep?.description}
-            </p>
-          </div>
-
-          {/* Personalized Guide */}
-          {currentStepIndex === 0 && (
-            <div className="space-y-4">
-              {!personalizedGuide ? (
-                <div className="p-4 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-5 h-5 text-purple-400" />
-                    <span className="text-white font-medium">Get Your Personalized Guide</span>
-                  </div>
-                  <p className="text-slate-400 text-sm mb-4">
-                    AI will create a custom onboarding plan based on your role and goals.
-                  </p>
-                  <Button
-                    onClick={generatePersonalizedGuide}
-                    disabled={isGeneratingGuide}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500"
-                    size="sm"
-                  >
-                    {isGeneratingGuide ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Generate My Guide
-                      </>
-                    )}
-                  </Button>
-                </div>
-              ) : (
-                <div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700 space-y-4">
-                  <p className="text-slate-300 text-sm italic">{personalizedGuide.welcome_message}</p>
-                  
-                  <div>
-                    <h4 className="text-white font-medium text-sm mb-2">🚀 Quick Wins</h4>
-                    <div className="space-y-2">
-                      {personalizedGuide.quick_wins?.map((win, idx) => (
-                        <div key={idx} className="text-xs">
-                          <span className="text-cyan-400 font-medium">{win.title}:</span>
-                          <span className="text-slate-400"> {win.description}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-white font-medium text-sm mb-2">💡 Pro Tips</h4>
-                    <ul className="space-y-1 text-xs text-slate-400">
-                      {personalizedGuide.pro_tips?.map((tip, idx) => (
-                        <li key={idx}>• {tip}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
+              <Badge className={cn(
+                "mb-4",
+                userRole === 'admin' ? "bg-purple-500/20 text-purple-300 border-purple-500/30" : "bg-blue-500/20 text-blue-300 border-blue-500/30"
+              )}>
+                {userRole === 'admin' ? <><Shield className="w-3 h-3 mr-1" /> Admin Account</> : <><User className="w-3 h-3 mr-1" /> Developer Account</>}
+              </Badge>
+              <h1 className="text-4xl font-bold text-white mb-3">
+                Welcome to VibeCode
+              </h1>
+              <p className="text-slate-400 text-lg mb-10 max-w-md mx-auto leading-relaxed">
+                Let's personalize your experience. It takes 30 seconds and makes a real difference.
+              </p>
+              <div className="flex flex-col gap-3 items-center">
+                <Button
+                  onClick={() => setPhase('intent')}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-10 py-5 text-base h-auto rounded-xl"
+                >
+                  Personalize My Experience
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                <button
+                  onClick={handleSkip}
+                  className="text-sm text-slate-500 hover:text-slate-400 transition-colors"
+                >
+                  Skip — take me to the dashboard
+                </button>
+              </div>
+            </motion.div>
           )}
 
-          {/* Step Indicators */}
-          <div className="flex justify-center gap-2">
-            {steps.map((step, idx) => (
-              <div
-                key={step.id}
-                className={cn(
-                  "h-2 rounded-full transition-all",
-                  idx === currentStepIndex ? "w-8 bg-gradient-to-r from-blue-500 to-cyan-500" :
-                  idx < currentStepIndex ? "w-2 bg-cyan-500/50" : "w-2 bg-slate-700"
-                )}
-              />
-            ))}
-          </div>
-        </div>
+          {/* INTENT — Template Category */}
+          {phase === 'intent' && (
+            <motion.div
+              key="intent"
+              initial={{ opacity: 0, x: 32 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -32 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">What do you want to build?</h2>
+                <p className="text-slate-400">Your AI guide will be customized for this type of app.</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+                {templateCategories.map(cat => {
+                  const Icon = cat.icon;
+                  const isSelected = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={cn(
+                        "p-4 rounded-xl border text-left transition-all duration-200",
+                        isSelected
+                          ? "border-blue-500/60 bg-blue-500/10 shadow-lg shadow-blue-500/10"
+                          : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-800/50"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-10 h-10 rounded-lg flex items-center justify-center mb-3 bg-gradient-to-br",
+                        cat.color
+                      )}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="font-medium text-white text-sm">{cat.label}</div>
+                      <div className="text-slate-500 text-xs mt-1 leading-snug">{cat.description}</div>
+                      {isSelected && (
+                        <div className="mt-2 flex items-center gap-1 text-blue-400 text-xs">
+                          <Check className="w-3 h-3" /> Selected
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-between">
+                <Button variant="ghost" onClick={() => setPhase('welcome')} className="text-slate-400 hover:text-white">
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+                <Button
+                  onClick={() => setPhase('goal')}
+                  disabled={!selectedCategory}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 disabled:opacity-40"
+                >
+                  Continue <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
 
-        {/* Navigation */}
-        <div className="flex justify-between pt-4 border-t border-slate-800">
-          <div>
-            {currentStepIndex === 0 ? (
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-                className="text-slate-400 hover:text-white"
-              >
-                Skip Tutorial
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={handlePrevious}
-                className="border-slate-700 text-slate-400"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
-            )}
-          </div>
+          {/* GOAL */}
+          {phase === 'goal' && (
+            <motion.div
+              key="goal"
+              initial={{ opacity: 0, x: 32 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -32 }}
+              transition={{ duration: 0.35 }}
+            >
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-white mb-2">What's your primary goal?</h2>
+                <p className="text-slate-400">This shapes which features and tutorials we highlight first.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                {userGoals.map(goal => {
+                  const Icon = goal.icon;
+                  const isSelected = selectedGoal === goal.id;
+                  return (
+                    <button
+                      key={goal.id}
+                      onClick={() => setSelectedGoal(goal.id)}
+                      className={cn(
+                        "p-5 rounded-xl border text-left transition-all duration-200",
+                        isSelected
+                          ? "border-purple-500/60 bg-purple-500/10 shadow-lg shadow-purple-500/10"
+                          : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-800/50"
+                      )}
+                    >
+                      <Icon className={cn("w-6 h-6 mb-3", isSelected ? "text-purple-400" : "text-slate-400")} />
+                      <div className="font-medium text-white text-sm">{goal.label}</div>
+                      <div className="text-slate-500 text-xs mt-1">{goal.description}</div>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-between">
+                <Button variant="ghost" onClick={() => setPhase('intent')} className="text-slate-400 hover:text-white">
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+                <Button
+                  onClick={generateGuide}
+                  disabled={!selectedGoal}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-40"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate My Guide
+                </Button>
+              </div>
+            </motion.div>
+          )}
 
-          <Button
-            onClick={handleNext}
-            className="bg-gradient-to-r from-blue-500 to-cyan-500"
-          >
-            {currentStepIndex === steps.length - 1 ? (
-              <>
-                Complete
-                <CheckCircle2 className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                {currentStep?.action || 'Next'}
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+          {/* GENERATING */}
+          {phase === 'generating' && (
+            <motion.div
+              key="generating"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-center py-12"
+            >
+              <div className="relative w-24 h-24 mx-auto mb-8">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 animate-spin opacity-80" style={{ animationDuration: '2s' }} />
+                <div className="absolute inset-1 rounded-full bg-slate-950 flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-blue-400" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-3">Building Your Guide</h2>
+              <p className="text-slate-400 mb-2">
+                Analyzing your goals and customizing your onboarding path…
+              </p>
+              <div className="flex justify-center gap-2 mt-6">
+                {['Selecting tutorials', 'Tailoring tips', 'Prioritizing tasks'].map((label, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.6, duration: 0.4 }}
+                    className="text-xs text-slate-500 flex items-center gap-1"
+                  >
+                    <div className="w-1 h-1 rounded-full bg-cyan-500" />
+                    {label}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* GUIDE */}
+          {phase === 'guide' && personalizedGuide && (
+            <motion.div
+              key="guide"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <span className="text-emerald-400 text-sm font-medium">Your personalized guide is ready</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  {personalizedGuide.welcome_message || 'Here\'s your path to success'}
+                </h2>
+              </div>
+
+              {/* Recommended Steps */}
+              <div className="space-y-2 mb-6">
+                {(personalizedGuide.recommended_steps || []).map((step, idx) => {
+                  const isDone = completedSteps.includes(step.title);
+                  return (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-xl border transition-all",
+                        isDone
+                          ? "bg-emerald-500/5 border-emerald-500/20"
+                          : "bg-slate-900/50 border-slate-800 hover:border-slate-700"
+                      )}
+                    >
+                      <button
+                        onClick={() => markStepComplete(step.title)}
+                        className={cn(
+                          "w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all",
+                          isDone
+                            ? "bg-emerald-500 border-emerald-500"
+                            : "border-slate-600 hover:border-blue-400"
+                        )}
+                      >
+                        {isDone && <Check className="w-3 h-3 text-white" />}
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className={cn("font-medium text-sm", isDone ? "text-slate-500 line-through" : "text-white")}>
+                            {step.title}
+                          </span>
+                          {step.priority === 'high' && !isDone && (
+                            <Badge className="bg-orange-500/20 text-orange-300 text-xs px-1.5 py-0">High priority</Badge>
+                          )}
+                        </div>
+                        <p className="text-slate-400 text-sm">{step.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Pro Tips */}
+              {personalizedGuide.pro_tips?.length > 0 && (
+                <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/5 border border-blue-500/20 mb-6">
+                  <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-yellow-400" /> Pro Tips
+                  </h4>
+                  <ul className="space-y-1">
+                    {personalizedGuide.pro_tips.map((tip, i) => (
+                      <li key={i} className="text-sm text-slate-400">
+                        <span className="text-cyan-400">→</span> {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="flex justify-between">
+                <Button variant="ghost" onClick={() => setPhase('goal')} className="text-slate-400 hover:text-white">
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+                <Button
+                  onClick={handleComplete}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500"
+                >
+                  Start Building <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Fallback guide if no AI data */}
+          {phase === 'guide' && !personalizedGuide && (
+            <motion.div
+              key="guide-fallback"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center"
+            >
+              <h2 className="text-2xl font-bold text-white mb-4">You're all set!</h2>
+              <p className="text-slate-400 mb-6">Head to the Generator to create your first app.</p>
+              <Button onClick={handleComplete} className="bg-gradient-to-r from-blue-500 to-cyan-500">
+                Go to Dashboard <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }

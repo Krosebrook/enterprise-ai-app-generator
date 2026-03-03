@@ -9,40 +9,40 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { userRole, selectedTemplate, completedSteps = [], userActivities = [] } = await req.json();
+    const { userRole, selectedTemplate, userGoal, completedSteps = [], userActivities = [] } = await req.json();
 
-    // Analyze user context
-    const context = {
-      role: userRole,
-      template: selectedTemplate,
-      completedSteps,
-      activities: userActivities
+    const templateLabels = {
+      saas: 'SaaS Application',
+      ai: 'AI-Powered Product',
+      'e-commerce': 'E-Commerce Store',
+      dashboard: 'Analytics Dashboard',
+      mobile: 'Mobile App'
     };
 
-    // Generate personalized guide using AI
-    const prompt = `Create a personalized onboarding guide for a ${context.role} user of an enterprise AI app development platform.
+    const goalLabels = {
+      build_fast: 'Ship Something Fast',
+      learn_platform: 'Learn the Platform',
+      explore_ai: 'Explore AI Features',
+      deploy_prod: 'Deploy to Production'
+    };
 
-User Context:
-- Role: ${context.role}
-- Selected Template: ${context.template || 'None yet'}
-- Completed Steps: ${context.completedSteps.join(', ') || 'None'}
-- Recent Activities: ${context.activities.length} actions
+    const templateLabel = templateLabels[selectedTemplate] || selectedTemplate || 'Not specified';
+    const goalLabel = goalLabels[userGoal] || userGoal || 'Not specified';
 
-Generate a JSON response with:
-1. A welcome message tailored to their role and experience level
-2. Top 3 recommended next steps based on their context
-3. 3 pro tips specific to their selected template (if any)
-4. Estimated time to complete onboarding (in minutes)
+    const prompt = `Create a highly personalized onboarding guide for a user of VibeCode, an enterprise AI app generation platform.
 
-Format:
-{
-  "welcome_message": "string",
-  "recommended_steps": [
-    {"title": "string", "description": "string", "priority": "high|medium|low"}
-  ],
-  "pro_tips": ["string"],
-  "estimated_completion_time": number
-}`;
+User Profile:
+- Role: ${userRole}
+- App type they want to build: ${templateLabel}
+- Primary goal: ${goalLabel}
+- Already completed: ${completedSteps.join(', ') || 'Nothing yet (brand new user)'}
+
+Your task: Generate 3-4 concise, ordered steps that directly map to their stated goal and template choice.
+Each step must be actionable and specific to the template category they chose.
+Pro tips should be insider knowledge relevant to their specific template + goal combination.
+Welcome message should feel personal and acknowledge their specific goal.
+
+Do not be generic. Reference their chosen template type and goal explicitly.`;
 
     const aiResponse = await base44.integrations.Core.InvokeLLM({
       prompt,
