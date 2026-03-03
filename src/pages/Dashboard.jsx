@@ -20,7 +20,6 @@ import ProjectCard from '@/components/dashboard/ProjectCard';
 import ProjectInsights from '@/components/project/ProjectInsights';
 import ContextualTooltip from '@/components/onboarding/ContextualTooltip';
 import DynamicTaskCard from '@/components/onboarding/DynamicTaskCard';
-import InteractiveTutorial from '@/components/onboarding/InteractiveTutorial';
 
 /**
  * Dashboard page component displaying project overview and quick actions
