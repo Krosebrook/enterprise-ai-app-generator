@@ -47,6 +47,7 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AIAdmin from './pages/AIAdmin';
 import CodeAI from './pages/CodeAI';
 import Collaboration from './pages/Collaboration';
 import Dashboard from './pages/Dashboard';
@@ -59,11 +60,11 @@ import Intelligence from './pages/Intelligence';
 import Pipelines from './pages/Pipelines';
 import Scripts from './pages/Scripts';
 import Templates from './pages/Templates';
-import AIAdmin from './pages/AIAdmin';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AIAdmin": AIAdmin,
     "CodeAI": CodeAI,
     "Collaboration": Collaboration,
     "Dashboard": Dashboard,
@@ -76,7 +77,6 @@ export const PAGES = {
     "Pipelines": Pipelines,
     "Scripts": Scripts,
     "Templates": Templates,
-    "AIAdmin": AIAdmin,
 }
 
 export const pagesConfig = {

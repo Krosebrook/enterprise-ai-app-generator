@@ -94,29 +94,14 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {/* Dynamic Task Recommendation */}
+      {/* Dynamic Task Recommendation — inline banner, not a full card */}
       {user && showTutorial && (
-        <div className="mb-8">
+        <div className="mb-6">
           <DynamicTaskCard
             currentPage="Dashboard"
             completedSteps={onboardingProgress?.completed_steps || []}
             userRole={user.role || 'user'}
-            onTaskComplete={(taskTitle) => {
-              console.log('Task completed:', taskTitle);
-            }}
-          />
-        </div>
-      )}
-
-      {/* Interactive Tutorial */}
-      {showTutorial && projects.length === 0 && (
-        <div className="mb-8">
-          <InteractiveTutorial
-            page="Generator"
-            onComplete={(page) => {
-              console.log('Tutorial completed for:', page);
-              setShowTutorial(false);
-            }}
+            onDismiss={() => setShowTutorial(false)}
           />
         </div>
       )}
