@@ -50,6 +50,7 @@ const navItems = [
  */
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [userRole, setUserRole] = useState('user');
 
