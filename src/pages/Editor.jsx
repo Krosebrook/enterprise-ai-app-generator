@@ -120,11 +120,11 @@ export default function Editor() {
   return (
     <div className="h-screen flex flex-col bg-slate-950">
       {/* Top Bar */}
-      <div className="h-16 border-b border-slate-800 flex items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-white">Visual Editor</h1>
+      <div className="h-14 sm:h-16 border-b border-slate-800 flex items-center justify-between px-3 sm:px-6 gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <h1 className="text-base sm:text-xl font-bold text-white whitespace-nowrap">Visual Editor</h1>
           <Select value={selectedProject} onValueChange={setSelectedProject}>
-            <SelectTrigger className="w-64 bg-slate-900/50 border-slate-800 text-white">
+            <SelectTrigger className="w-36 sm:w-64 bg-slate-900/50 border-slate-800 text-white text-sm">
               <SelectValue placeholder="Select Project" />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-slate-700">
@@ -137,51 +137,40 @@ export default function Editor() {
           </Select>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-slate-400 hover:text-white"
-          >
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
             <Undo className="w-4 h-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-slate-400 hover:text-white"
-          >
+          <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
             <Redo className="w-4 h-4" />
           </Button>
-          <div className="h-6 w-px bg-slate-800 mx-2" />
+          <div className="h-6 w-px bg-slate-800 mx-1" />
           <Button
             variant="ghost"
+            size="sm"
             onClick={() => setAiAssistantOpen(!aiAssistantOpen)}
-            className={cn(
-              "text-slate-400",
-              aiAssistantOpen && "bg-purple-500/20 text-purple-400"
-            )}
+            className={cn("text-slate-400 px-2", aiAssistantOpen && "bg-purple-500/20 text-purple-400")}
           >
-            <Sparkles className="w-4 h-4 mr-2" />
-            AI Assistant
+            <Sparkles className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">AI Assistant</span>
           </Button>
           <Button
             variant="ghost"
+            size="sm"
             onClick={() => setPreviewMode(!previewMode)}
-            className={cn(
-              "text-slate-400",
-              previewMode && "bg-blue-500/20 text-blue-400"
-            )}
+            className={cn("text-slate-400 px-2", previewMode && "bg-blue-500/20 text-blue-400")}
           >
-            <Eye className="w-4 h-4 mr-2" />
-            Preview
+            <Eye className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Preview</span>
           </Button>
           <Button
+            size="sm"
             onClick={handleSave}
             disabled={!isDirty || !selectedComponent || saveMutation.isPending}
             className="bg-gradient-to-r from-blue-500 to-cyan-500"
           >
-            <Save className="w-4 h-4 mr-2" />
-            Save Changes
+            <Save className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Save</span>
           </Button>
         </div>
       </div>
@@ -189,7 +178,7 @@ export default function Editor() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Component Tree */}
-        <div className="w-64 border-r border-slate-800 bg-slate-900/50 overflow-y-auto p-4">
+        <div className="w-48 sm:w-64 border-r border-slate-800 bg-slate-900/50 overflow-y-auto p-3 sm:p-4">
           <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
             <Code className="w-4 h-4" />
             Components
@@ -337,7 +326,7 @@ export default function Editor() {
 
         {/* Right Sidebar - AI Assistant or Live Preview */}
         {aiAssistantOpen && (
-          <div className="w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
+          <div className="w-72 sm:w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
             <AIAssistant 
               code={editValues.content}
               onApplyCode={(code) => {
@@ -349,7 +338,7 @@ export default function Editor() {
         )}
         
         {previewMode && !aiAssistantOpen && (
-          <div className="w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
+          <div className="w-72 sm:w-96 border-l border-slate-800 bg-slate-900/50 overflow-auto">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <h3 className="text-white font-semibold flex items-center gap-2">
                 <Eye className="w-4 h-4" />

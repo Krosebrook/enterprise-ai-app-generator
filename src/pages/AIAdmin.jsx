@@ -26,7 +26,7 @@ export default function AIAdmin() {
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <h1 className="text-3xl font-bold text-white">AI Admin Center</h1>
