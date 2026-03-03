@@ -75,11 +75,38 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-slate-950/80 z-40 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-slate-900/90 backdrop-blur-xl border-b border-slate-800/50 flex items-center justify-between px-4 z-30 lg:hidden">
+        <button onClick={() => setMobileOpen(true)} className="text-slate-400 hover:text-white p-1">
+          <div className="w-5 h-0.5 bg-current mb-1" />
+          <div className="w-5 h-0.5 bg-current mb-1" />
+          <div className="w-5 h-0.5 bg-current" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-bold text-sm">VibeCode</span>
+        </div>
+        <div className="w-8" />
+      </div>
+
       {/* Sidebar */}
-      <aside 
+      <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-slate-900/50 backdrop-blur-xl border-r border-slate-800/50 transition-all duration-300 z-50 flex flex-col",
-          collapsed ? "w-20" : "w-64"
+          "fixed left-0 top-0 h-full bg-slate-900/95 backdrop-blur-xl border-r border-slate-800/50 transition-all duration-300 z-50 flex flex-col",
+          // Desktop: collapsed/expanded
+          collapsed ? "lg:w-20" : "lg:w-64",
+          // Mobile: slide in/out, always full width sidebar
+          mobileOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full lg:translate-x-0"
         )}
       >
         {/* Logo */}
