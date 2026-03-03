@@ -111,8 +111,8 @@ export default function Layout({ children, currentPageName }) {
       >
         {/* Logo */}
         <div className="h-16 flex items-center px-4 border-b border-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0">
               <Zap className="w-5 h-5 text-white" />
             </div>
             {!collapsed && (
@@ -122,6 +122,13 @@ export default function Layout({ children, currentPageName }) {
               </div>
             )}
           </div>
+          {/* Close button on mobile */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="lg:hidden text-slate-400 hover:text-white ml-2"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Navigation */}
