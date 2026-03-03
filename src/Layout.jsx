@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { base44 } from '@/api/base44Client';
-import OnboardingFlow from './components/onboarding/OnboardingFlow';
+import OnboardingFlow from './components/onboarding/OnboardingFlow.jsx';
 
 /**
  * Navigation configuration for the application sidebar
